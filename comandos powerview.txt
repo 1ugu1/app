@@ -1,0 +1,9 @@
+"Com o Powerview em execução, execute:
+- Get-NetUser | select Name
+- Get-NetGroup | select Name
+- Get-NetComputer | select Name
+- Get-NetGroupMember ""Domain Admins""
+- Get-ObjectAcl -SamAccountName ""Domain Admins""
+- Get-NetOU select | name
+- Get-NetDomainTrust
+- Find-LocalAdminAccess"
