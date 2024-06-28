@@ -4,6 +4,68 @@ powershell -Command "$event = New-Object System.Diagnostics.EventInstance(4624, 
 2. QA_RC308_C134_E.R_A_WIN_Detect Forged Kerberos Ticket
 powershell -Command "$event = New-Object System.Diagnostics.EventInstance(4624, 0, [System.Diagnostics.EventLogEntryType]::Information); $eventLog = New-Object System.Diagnostics.EventLog('Security'); $eventLog.Source = 'QA_RC308_Test'; $eventLog.WriteEvent($event, 'A test event for detecting forged Kerberos ticket: The login user is not the actual user'); Write-Host 'Test event created in Security log with EventID 4624'"
 
+
+---
+from impacket.krb5 import constants
+from impacket.krb5.kerberosv5 import KerberosError
+from impacket.krb5.ccache import CCache
+from impacket.krb5.crypto import Key, _enctype_table
+from impacket.krb5.types import Principal, Ticket
+from impacket.krb5.asn1 import AP_REQ, EncASRepPart
+from impacket.krb5.asn1 import KRB_CRED, EncKrbCredPart
+from impacket.krb5.pac import PACTYPE
+from impacket.krb5.crypto import Key
+from impacket.krb5.pac import NDRParser
+from pyasn1.codec.der import decoder, encoder
+import datetime
+
+# Configurações de Kerberos
+domain = 'YOUR.DOMAIN'
+user = 'username'
+password = 'password'
+target_spn = 'HTTP/target.domain.com'
+
+# Função para solicitar um TGT
+def get_tgt(user, password, domain):
+    try:
+        from impacket.krb5 import getTGT
+        user_principal = Principal(user, type=constants.PrincipalNameType.NT_PRINCIPAL.value)
+        tgt, cipher, session_key = getTGT(user_principal, password, domain)
+        return tgt, cipher, session_key
+    except Exception as e:
+        print(f"Erro ao obter TGT: {e}")
+        return None, None, None
+
+# Função para solicitar um TGS
+def get_tgs(tgt, cipher, session_key, target_spn, domain):
+    try:
+        from impacket.krb5 import getKerberosTGS
+        tgs, cipher_tgs, session_key_tgs = getKerberosTGS(tgt, cipher, session_key, target_spn, domain)
+        return tgs, cipher_tgs, session_key_tgs
+    except Exception as e:
+        print(f"Erro ao obter TGS: {e}")
+        return None, None, None
+
+# Obter TGT
+tgt, tgt_cipher, tgt_session_key = get_tgt(user, password, domain)
+
+if tgt:
+    # Obter TGS
+    tgs, tgs_cipher, tgs_session_key = get_tgs(tgt, tgt_cipher, tgt_session_key, target_spn, domain)
+    
+    if tgs:
+        print("Ticket de Serviço Kerberos (TGS) obtido com sucesso.")
+        # Aqui você pode modificar o TGS conforme necessário
+    else:
+        print("Erro ao obter TGS.")
+else:
+    print("Erro ao obter TGT.")
+
+
+
+
+-
+
 3. QA_RC308_C130_E.R_A_WAF_Cross Site Scripting Strings
 Invoke-WebRequest -Uri "http://example.com/page.php?name=<script>alert('XSS');</script>"
 4. QA_RC308_C131_E.R_A_WAF_SQL Injection Strings In URI
