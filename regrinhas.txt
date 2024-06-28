@@ -24,7 +24,8 @@ Invoke-Expression "python.exe C:\Path\to\smbrelayx.py -h"
 New-WebHandler -Name "SuspiciousModule" -Path "*.aspx" -Module "SuspiciousModule.dll" -ScriptProcessor "C:\Path\to\SuspiciousModule.dll"
 
 10. QA_RC308_C122_E.R_A_WIN_Microsoft IIS Connection Strings Decryption
-aspnet_regiis -pdf "connectionStrings" C:\path\to\web.config
+Start-Process "C:\Windows\Microsoft.NET\Framework\v4.0.30319\aspnet_regiis.exe" -ArgumentList '-pd "connectionStrings" -app "/Default Web Site"'
+
 
 11. QA_RC308_C117_E.R_M_WIN_HackTool - ADCSPwn Execution
 Invoke-Command -ComputerName DC01 -Credential (New-Object System.Management.Automation.PSCredential ("Administrator", (ConvertTo-SecureString "P@ssw0rd" -AsPlainText -Force))) -ScriptBlock { <ADCSPwn-like commands here> }
