@@ -29,6 +29,9 @@ Invoke-Command -ComputerName DC01 -Credential (New-Object System.Management.Auto
 
 12. QA_RC308_C124_E.R_A_WIN_Request A Single Ticket via PowerShell
 Get-ADComputer -Filter {Name -eq "ComputerName"} | ForEach-Object { Get-ADComputer $_.Name -Properties ServicePrincipalName | Select-Object -ExpandProperty ServicePrincipalName }
+____
+([ADSISearcher]"(&(objectCategory=computer)(name=ComputerName))").FindOne().Properties.servicePrincipalName
+
 
 13. QA_RC308_C125_E.R_M_WIN_Suspicious Kerberos RC4 Ticket Encryption
 New-Object System.DirectoryServices.AccountManagement.PrincipalContext([System.DirectoryServices.AccountManagement.ContextType]::Domain) | ForEach-Object { New-Object System.DirectoryServices.AccountManagement.UserPrincipal($_) } | ForEach-Object { $_.TestLocalPassword("P@ssw0rd") }
