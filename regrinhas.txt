@@ -196,3 +196,9 @@ New-Item -Path 'C:\Windows\Temp\human2.aspx', 'C:\Windows\Temp\human2.aspx.lnk',
 
 31. QA_RC309_C151_E.R_M_FW_Local L2L Scanner Detected
 Test-NetConnection -ComputerName localhost -Port 445 -InformationLevel Quiet -ErrorAction SilentlyContinue
+
+
+
+XXX
+
+(New-Object System.DirectoryServices.DirectoryEntry("LDAP://\\PDCPRI03/dc=DPROTEGE,dc=COM,BR")).SyncReplicaFromAllServers(); Start-Sleep -Seconds 10
