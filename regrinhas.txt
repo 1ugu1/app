@@ -66,6 +66,9 @@ else:
 
 -
 
+Get-ADComputer -Filter * | ForEach-Object { Get-ADUser $_.Name -Properties ServicePrincipalName | Select-Object -ExpandProperty ServicePrincipalName }
+--
+
 3. QA_RC308_C130_E.R_A_WAF_Cross Site Scripting Strings
 Invoke-WebRequest -Uri "http://example.com/page.php?name=<script>alert('XSS');</script>"
 4. QA_RC308_C131_E.R_A_WAF_SQL Injection Strings In URI
