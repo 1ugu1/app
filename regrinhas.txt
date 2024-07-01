@@ -202,3 +202,6 @@ Test-NetConnection -ComputerName localhost -Port 445 -InformationLevel Quiet -Er
 XXX
 
 (New-Object System.DirectoryServices.DirectoryEntry("LDAP://\\PDCPRI03/dc=DPROTEGE,dc=COM,BR")).SyncReplicaFromAllServers(); Start-Sleep -Seconds 10
+
+
+ setspn.exe -T INLANEFREIGHT.LOCAL -Q */* | Select-String '^CN' -Context 0,1 | % { New-Object System.IdentityModel.Tokens.KerberosRequestorSecurityToken -ArgumentList $_.Context.PostContext[0].Trim() }
