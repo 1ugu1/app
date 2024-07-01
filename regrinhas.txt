@@ -210,3 +210,6 @@ $_.Context.PostContext[0].Trim() }
 # Simular solicitação de ticket Kerberos com RC4
 $rc4Ticket = New-Object System.DirectoryServices.AccountManagement.KerberosRequestorSecurityToken -ArgumentList "ServicePrincipalName", "RC4_HMAC_NT"
 
+Invoke-Command -ComputerName PDCPRI03 -ScriptBlock { Add-Type -AssemblyName System.DirectoryServices.AccountManagement; $principal = "ServicePrincipalName"; $encryptionType = 0x17; $request = New-Object System.DirectoryServices.AccountManagement.KerberosRequestorSecurityToken($principal, $encryptionType) }
+
+
